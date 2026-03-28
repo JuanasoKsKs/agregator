@@ -1,30 +1,40 @@
 package main
-
+import _ "github.com/lib/pq"
 import(
 	"github.com/JuanasoKsKs/agregator/internal/config"
 	"log"
 	"os"
+	"database/sql"
+	"github.com/JuanasoKsKs/agregator/internal/database"
 	//"fmt"
 )
 
 type state struct {
+	db *database.Queries
 	cfg *config.Config
 }
 
 func main() {
 	arguments := os.Args
 	if len(arguments) < 2 {
-		log.Fatalf("Specify a command")
+		log.Fatalf("Specify a command\n")
 	}
 	cfgs, err := config.Read()
 	if err != nil {
-		log.Fatalf("error reading config: %v", err)
+		log.Fatalf("error reading config: %v\n", err)
 	}
 	cmd := command{
 		Name: arguments[1],
 		Args: arguments[2:],
 	}
+	db, err := sql.Open("postgres", cfgs.DbURL)
+	if err != nil {
+		log.Fatalf("error establishing conection with the database: %v\n", err)
+	}
+	dbQueries := database.New(db)
+
 	programState := &state{
+		db: dbQueries,
 		cfg: &cfgs,
 	}
 	cmds := commands{
@@ -33,11 +43,15 @@ func main() {
 	
 	err = cmds.register("login", handlerLogin)
 	if err != nil {
-		log.Fatalf("error registering command: %v", err)
+		log.Fatalf("error registering command: %v\n", err)
+	}
+	err = cmds.register("register", handlerRegister)
+	if err != nil {
+		log.Fatalf("error registering command: %v\n", err)
 	}
 	err = cmds.run(programState, cmd)
 	if err != nil {
-		log.Fatalf("error running the command: %v", err)
+		log.Fatalf("error running the command: %v\n", err)
 	}
 	
 
