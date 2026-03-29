@@ -49,6 +49,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("error registering command: %v\n", err)
 	}
+	err = cmds.register("reset", handlerReset)
+	if err != nil {
+		log.Fatalf("error registering command: %v\n", err)
+	}
+	cmds.register("users", handlerList)
 	err = cmds.run(programState, cmd)
 	if err != nil {
 		log.Fatalf("error running the command: %v\n", err)
