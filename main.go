@@ -1,11 +1,11 @@
 package main
-import _ "github.com/lib/pq"
 import(
 	"github.com/JuanasoKsKs/agregator/internal/config"
 	"log"
 	"os"
 	"database/sql"
 	"github.com/JuanasoKsKs/agregator/internal/database"
+	_ "github.com/lib/pq"
 	//"fmt"
 )
 
@@ -31,6 +31,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error establishing conection with the database: %v\n", err)
 	}
+	defer db.Close()
 	dbQueries := database.New(db)
 
 	programState := &state{
@@ -54,6 +55,7 @@ func main() {
 		log.Fatalf("error registering command: %v\n", err)
 	}
 	cmds.register("users", handlerList)
+	cmds.register("agg", handlerAgg)
 	err = cmds.run(programState, cmd)
 	if err != nil {
 		log.Fatalf("error running the command: %v\n", err)
