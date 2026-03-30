@@ -42,20 +42,13 @@ func main() {
 		registeredCommands : make(map[string]func(*state, command) error),
 	}
 	
-	err = cmds.register("login", handlerLogin)
-	if err != nil {
-		log.Fatalf("error registering command: %v\n", err)
-	}
-	err = cmds.register("register", handlerRegister)
-	if err != nil {
-		log.Fatalf("error registering command: %v\n", err)
-	}
-	err = cmds.register("reset", handlerReset)
-	if err != nil {
-		log.Fatalf("error registering command: %v\n", err)
-	}
+	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
+	cmds.register("reset", handlerReset)
 	cmds.register("users", handlerList)
 	cmds.register("agg", handlerAgg)
+	cmds.register("addfeed", handlerAddFeed)
+	
 	err = cmds.run(programState, cmd)
 	if err != nil {
 		log.Fatalf("error running the command: %v\n", err)

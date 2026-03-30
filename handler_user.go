@@ -79,4 +79,3 @@ func handlerList(s *state, cmd command) error {
 	}
 	return nil
 }
-
