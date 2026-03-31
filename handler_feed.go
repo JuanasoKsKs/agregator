@@ -38,3 +38,23 @@ func handlerAddFeed(s *state, cmd command) error {
 	fmt.Println("the feed has been added")
 	return nil
 }
+
+func handlerFeed(s *state, cmd command) error {
+	ctx := context.Background()
+	feeds, err := s.db.ListFeeds(ctx)
+	if err != nil {
+		return err
+	}
+	for i, feed := range feeds {
+		user, err := s.db.GetUserByID(ctx, feed.UserID)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("====== Feed %v ======\n", i + 1)
+		fmt.Printf("Name: %v\n", feed.Name)
+		fmt.Printf("URL: %v \n", feed.Url)
+		fmt.Printf("User (author): %v\n", user.Name)
+
+	}
+	return nil
+}
