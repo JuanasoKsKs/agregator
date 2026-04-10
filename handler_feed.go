@@ -31,11 +31,25 @@ func handlerAddFeed(s *state, cmd command) error {
 		UserID: user.ID,
 	}
 
-	_, err = s.db.CreateFeed(ctx, feed_params)
+	feed, err := s.db.CreateFeed(ctx, feed_params)
 	if err != nil {
-		log.Fatalf("Error creating feed: \n", err)
+		log.Fatalf("Error creating feed: %v\n", err)
 	}
 	fmt.Println("the feed has been added")
+
+	feed_follow_params := database.CreateFeedFollowParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID: user.ID,
+		FeedID: feed.ID,
+	}
+	row, err := s.db.CreateFeedFollow(ctx, feed_follow_params)
+	if err != nil {
+		log.Fatalf("Error creating feed_follow: %v\n", err)
+	}
+	fmt.Printf("the user: (%v) started following: (%v)\n", row.UserName, row.FeedName)
+
 	return nil
 }
 
