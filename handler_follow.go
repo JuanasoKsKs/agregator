@@ -10,16 +10,11 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return errors.New("The AddFeed Follow expects a One argument, the URL")
 	}
-	current_user := s.cfg.CurrentUserName
 	ctx := context.Background()
-	user, err := s.db.GetUser(ctx, current_user)
-	if err != nil {
-		log.Fatalf("user '%v' does NOT exists in the database: %v\n", current_user, err)
-	}
 	url := cmd.Args[0]
 	feed, err := s.db.GetFeedByURL(ctx, url)
 	if err != nil {
@@ -42,18 +37,11 @@ func handlerFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollowing(s *state, cmd command) error {
+func handlerFollowing(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 0 {
 		return errors.New("following command expects NO arguments")
 	}
-	current_user := s.cfg.CurrentUserName
-	ctx := context.Background()
-	user, err := s.db.GetUser(ctx, current_user)
-	if err != nil {
-		log.Fatalf("user '%v' does NOT exists in the database: %v\n", current_user, err)
-	}
-
-	followings, err := s.db.GetFeedFollowsForUser(ctx, user.ID)
+	followings, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		log.Fatalf("Error getting the followings: %v\n", err)
 	}
