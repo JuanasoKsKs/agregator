@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/JuanasoKsKs/agregator/internal/database"
 	"github.com/google/uuid"
+	"database/sql"
 )
 
 func handlerAddFeed(s *state, cmd command, user database.User) error {
@@ -79,13 +80,38 @@ func scrapeFeeds(s *state) error {
 		return err
 	}
 	fmt.Println("Fetching New feed...........")
-	feed, err := fetchFeed(ctx, nextFeed.Url)
+	Rssfeed, err := fetchFeed(ctx, nextFeed.Url)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("============   Showing Items From: (%s)  ============\n", feed.Channel.Title)
-	for _, item := range feed.Channel.Item {
-		fmt.Println(item.Title)
+	fmt.Printf("============   Saving posts from: (%s)  ============\n", Rssfeed.Channel.Title)
+	for _, item := range Rssfeed.Channel.Item {
+		// layout := "Mon, 02 Jan 2006 15:04:05 -0700"
+		// layout == time.RFC1123Z
+		t, err := time.Parse(time.RFC1123Z, item.PubDate)
+		if err != nil {
+			return err
+		}
+		null_description := sql.NullString{
+			String: item.Description,
+			Valid: item.Description != "",
+		}
+		params := database.CreatePostParams{
+			ID          : uuid.New(),
+			CreatedAt   : time.Now(),
+			UpdatedAt   : time.Now(),
+			Title       : item.Title,
+			Url         : item.Link,
+			Description : null_description,
+			PublishedAt : t,
+			FeedID      : nextFeed.ID,
+		}
+		post, err := s.db.CreatePost(context.Background(), params)
+		if err != nil {
+			return err
+		}
+		fmt.Println(post.Title)
+
 	}
 	return nil
 }
