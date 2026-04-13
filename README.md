@@ -23,9 +23,16 @@ __________________________________
     Here you can rename the command as you want
 2.  **Install the Binary:**
     ```bash
-    go install -o gator
+    go install
     ```
     You don't need to specify buil . or install . if you're already in the agregator directory
+3. **(optional)**
+    If you rename the command you have to move the built executable to the go/bin folder
+    ```bash
+    mv gator $(go env GOPATH)/bin/
+    ```
+    If you don't do this the command would have the name of the folder
+
 __________________________________
 == Set Environment Variable ==
 
@@ -47,32 +54,32 @@ _______________________________________
 == COMMANDS ==
 ## Account Management 
 1. gator register `username`
-Creates a new user account in the database.
+    Creates a new user account in the database.
 -----
 2. gator login `username`
 Sets the current CLI session to the specified user. Required for almost all other commands.
 -----
-3. gator reset	
-DANGER: Drops all database
+3. gator _reset_
+    DANGER: Drops all database
 
 ## Feed Management 
 4. gator addfeed `name` `url`	
-Adds a new RSS feed to the system and automatically follows it for the current user.
+    Adds a new RSS feed to the system and automatically follows it for the current user.
 -----
 5. gator unfollow `url`
-Stops following a feed. The feed remains in the system but posts will not show up in your feed.
+    Stops following a feed. The feed remains in the system but posts will not show up in your feed.
 -----
 6. gator following	
-Displays a list of all feeds the current user is subscribed to.
+    Displays a list of all feeds the current user is subscribed to.
 
 ## Aggregation
 7. gator agg `time_between_reqs`	
-Starts the continuous aggregation service. This command runs forever (until interrupted with Ctrl+C). It fetches all feeds and saves new posts to the database based on the interval.
-@ Example: gator agg 1m (Collects feeds every 1 minute)
+    Starts the continuous aggregation service. This command runs forever (until interrupted with Ctrl+C). It fetches all feeds and saves new posts to the database based on the interval.
+    @ Example: gator agg 1m (Collects feeds every 1 minute)
 -----
 8. gator browse `limit`	
-Views the latest posts from all followed feeds, ordered by publication date.
-@ Example: gator browse 10 (Shows the 10 most recent posts)
+    Views the latest posts from all followed feeds, ordered by publication date.
+    @ Example: gator browse 10 (Shows the 10 most recent posts)
 
 
 
