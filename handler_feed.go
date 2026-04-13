@@ -67,3 +67,25 @@ func handlerFeed(s *state, cmd command) error {
 	}
 	return nil
 }
+
+func scrapeFeeds(s *state) error {
+	ctx := context.Background()
+	nextFeed, err := s.db.GetNextFeedFetched(ctx)
+	if err != nil {
+		return err
+	}
+	err = s.db.MarkFeedFetched(ctx, nextFeed.ID)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Fetching New feed...........")
+	feed, err := fetchFeed(ctx, nextFeed.Url)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("============   Showing Items From: (%s)  ============\n", feed.Channel.Title)
+	for _, item := range feed.Channel.Item {
+		fmt.Println(item.Title)
+	}
+	return nil
+}
